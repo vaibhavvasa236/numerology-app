@@ -1,0 +1,715 @@
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold:       #c9a84c;
+  --gold-light: #e6c97a;
+  --gold-dim:   #7a6030;
+  --bg:         #0d0b14;
+  --bg-card:    #15121f;
+  --bg-card2:   #1c1828;
+  --border:     #2e2843;
+  --text:       #e8e2f5;
+  --text-muted: #8b82a8;
+  --purple:     #7c5cbf;
+  --purple-light: #a07ee0;
+  --radius:     14px;
+  --shadow:     0 4px 24px rgba(0,0,0,.45);
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ── Header ── */
+.site-header {
+  background: linear-gradient(160deg, #1a1030 0%, #0d0b14 60%);
+  border-bottom: 1px solid var(--border);
+  padding: 3rem 1.5rem 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,92,191,.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.header-symbol {
+  font-size: 2rem;
+  color: var(--gold);
+  display: block;
+  margin-bottom: .6rem;
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { text-shadow: 0 0 8px rgba(201,168,76,.3); }
+  50%       { text-shadow: 0 0 24px rgba(201,168,76,.8); }
+}
+
+.site-header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold), #a07030);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: .04em;
+}
+
+.header-sub {
+  margin-top: .6rem;
+  color: var(--text-muted);
+  font-size: .95rem;
+  font-weight: 300;
+  letter-spacing: .02em;
+}
+
+/* ── Main layout ── */
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+/* ── Form section ── */
+.form-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 580px) {
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.field-group label {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.field-group input {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  padding: .7rem 1rem;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  -webkit-appearance: none;
+  color-scheme: dark;
+}
+
+.field-group input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(124,92,191,.2);
+}
+
+.field-hint {
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+
+.form-error {
+  color: #f87171;
+  font-size: .88rem;
+  margin-top: .5rem;
+  padding: .5rem .75rem;
+  background: rgba(248,113,113,.08);
+  border-radius: 6px;
+  border: 1px solid rgba(248,113,113,.2);
+}
+
+.btn-calculate {
+  margin-top: 1.5rem;
+  width: 100%;
+  background: linear-gradient(135deg, var(--purple) 0%, #5a3d9a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  padding: .9rem 2rem;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s, background .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+}
+
+.btn-calculate:hover {
+  background: linear-gradient(135deg, var(--purple-light) 0%, var(--purple) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124,92,191,.4);
+}
+
+.btn-calculate:active { transform: translateY(0); }
+
+.btn-icon { font-size: 1rem; color: var(--gold-light); }
+
+/* ── Tabs ── */
+.tabs-bar {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .35rem;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+  padding: .6rem 1rem;
+  border-radius: 9px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s, color .2s;
+}
+
+.tab-btn:hover { color: var(--text); background: var(--bg-card2); }
+
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--purple) 0%, #5a3d9a 100%);
+  color: #fff;
+  font-weight: 600;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── Section intro ── */
+.section-intro {
+  margin-bottom: 1.75rem;
+}
+
+.section-intro h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  color: var(--gold-light);
+  margin-bottom: .4rem;
+}
+
+.section-intro p {
+  color: var(--text-muted);
+  font-size: .92rem;
+  max-width: 680px;
+}
+
+/* ── Number cards ── */
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.number-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.2rem;
+  text-align: center;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.number-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,.5);
+}
+
+.number-card.highlight {
+  border-color: var(--gold-dim);
+  background: linear-gradient(160deg, #1e1830 0%, var(--bg-card) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.number-card.highlight::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.card-label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: .6rem;
+}
+
+.card-number {
+  font-family: 'Cinzel', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: .3rem;
+}
+
+.card-compound {
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-bottom: .1rem;
+}
+
+.card-compound::before { content: 'Compound: '; }
+
+.card-raw {
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-bottom: .5rem;
+}
+
+.card-meaning {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: .5rem;
+  padding-top: .5rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Letter table ── */
+.letter-table-section {
+  margin-bottom: 2rem;
+}
+
+.letter-table-section h3,
+.chart-reference h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--gold-light);
+  margin-bottom: .85rem;
+  letter-spacing: .04em;
+}
+
+.letter-table {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.letter-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: .4rem .55rem;
+  min-width: 38px;
+  text-align: center;
+}
+
+.letter-chip.vowel { border-color: var(--purple); background: rgba(124,92,191,.12); }
+
+.letter-chip .lc-letter {
+  font-family: 'Cinzel', serif;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.letter-chip.vowel .lc-letter { color: var(--purple-light); }
+
+.letter-chip .lc-value {
+  font-size: .72rem;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* ── Chart reference ── */
+.chart-reference {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: .25rem;
+  max-width: 400px;
+}
+
+.chart-grid.chaldean-chart {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.chart-row {
+  display: contents;
+}
+
+.chart-row span {
+  text-align: center;
+  padding: .35rem .2rem;
+  font-size: .82rem;
+  color: var(--text-muted);
+  border-radius: 4px;
+}
+
+.chart-row.header-row span {
+  color: var(--gold);
+  font-weight: 700;
+  font-size: .85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Compound note ── */
+.compound-note {
+  background: rgba(201,168,76,.06);
+  border: 1px solid rgba(201,168,76,.2);
+  border-radius: 8px;
+  padding: .85rem 1.1rem;
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.75rem;
+  line-height: 1.6;
+}
+
+.compound-note strong { color: var(--gold); }
+
+/* ── Lo Shu Grid ── */
+.loshu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.loshu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .6rem;
+  width: min(320px, 100%);
+}
+
+.loshu-cell {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .15rem;
+  transition: transform .2s;
+}
+
+.loshu-cell:hover { transform: scale(1.04); }
+
+.loshu-cell.present {
+  border-color: var(--gold-dim);
+  background: linear-gradient(145deg, #1e1a30, #15121f);
+}
+
+.loshu-cell.missing {
+  opacity: .35;
+  border-style: dashed;
+}
+
+.loshu-cell .cell-num {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.loshu-cell.missing .cell-num { color: var(--text-muted); }
+
+.loshu-cell .cell-dots {
+  display: flex;
+  gap: 2px;
+  min-height: 8px;
+}
+
+.loshu-cell .cell-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--purple-light);
+}
+
+.loshu-cell .cell-count {
+  font-size: .7rem;
+  color: var(--text-muted);
+}
+
+.loshu-legend {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .82rem;
+  color: var(--text-muted);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-item.present .legend-dot { background: var(--gold); }
+.legend-item.missing .legend-dot { background: var(--text-muted); border: 1px dashed var(--text-muted); }
+
+/* ── Lo Shu planes ── */
+.loshu-planes {
+  margin-bottom: 2rem;
+}
+
+.planes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .85rem;
+}
+
+@media (max-width: 580px) {
+  .planes-grid { grid-template-columns: 1fr; }
+}
+
+.plane-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.plane-label {
+  font-weight: 600;
+  font-size: .82rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .25rem;
+}
+
+.plane-numbers {
+  font-family: 'Cinzel', serif;
+  font-size: .9rem;
+  color: var(--purple-light);
+  margin-bottom: .4rem;
+}
+
+.plane-card p {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Lo Shu analysis ── */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: .85rem;
+  margin-bottom: 2rem;
+}
+
+.analysis-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.analysis-card .ac-num {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: .15rem;
+}
+
+.analysis-card .ac-planet {
+  font-size: .75rem;
+  color: var(--purple-light);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .4rem;
+}
+
+.analysis-card .ac-trait {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.analysis-card .ac-count {
+  margin-top: .4rem;
+  font-size: .75rem;
+  color: var(--gold-dim);
+}
+
+/* ── Missing numbers ── */
+.missing-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .85rem;
+}
+
+.missing-card {
+  background: rgba(248,113,113,.05);
+  border: 1px dashed rgba(248,113,113,.25);
+  border-radius: 10px;
+  padding: .85rem 1.1rem;
+  min-width: 180px;
+}
+
+.missing-card .mc-num {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  color: #f87171;
+  margin-bottom: .2rem;
+}
+
+.missing-card .mc-label {
+  font-size: .72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: .3rem;
+}
+
+.missing-card .mc-trait {
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Prediction section ── */
+.prediction-section {
+  margin-bottom: 2rem;
+}
+
+.prediction-section h3,
+.loshu-planes h3,
+.loshu-numbers-detail h3,
+.loshu-missing-section h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--gold-light);
+  margin-bottom: .85rem;
+  letter-spacing: .04em;
+}
+
+.predictions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.pred-card {
+  background: linear-gradient(145deg, #1a1530 0%, var(--bg-card) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.35rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.pred-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(124,92,191,.6), transparent);
+}
+
+.pred-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,0,0,.45);
+}
+
+.pred-icon {
+  font-size: 1.2rem;
+  color: var(--gold);
+  margin-bottom: .5rem;
+  line-height: 1;
+}
+
+.pred-title {
+  font-family: 'Cinzel', serif;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: .6rem;
+  line-height: 1.4;
+}
+
+.pred-body {
+  font-size: .85rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* ── Utility ── */
+.hidden { display: none !important; }
+
+/* ── Footer ── */
+.site-footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-muted);
+  font-size: .8rem;
+  border-top: 1px solid var(--border);
+}

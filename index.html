@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Numerology Calculator — Chaldean · Pythagorean · Lo Shu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-symbol">✦</div>
+      <h1>Numerology Calculator</h1>
+      <p class="header-sub">Discover your numbers through Chaldean, Pythagorean &amp; Lo Shu Grid</p>
+    </div>
+  </header>
+
+  <!-- ── FORM ── -->
+  <main>
+    <section class="form-section">
+      <form id="calc-form" novalidate>
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="full-name">Full Name</label>
+            <input type="text" id="full-name" placeholder="e.g. Ramesh Kumar Sharma" autocomplete="off" />
+            <span class="field-hint">Enter your name exactly as used</span>
+          </div>
+          <div class="field-group">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" />
+            <span class="field-hint">DD / MM / YYYY</span>
+          </div>
+        </div>
+        <div id="form-error" class="form-error hidden"></div>
+        <button type="submit" class="btn-calculate">
+          <span class="btn-icon">✦</span> Calculate My Numbers
+        </button>
+      </form>
+    </section>
+
+    <!-- ── RESULTS (hidden until calculated) ── -->
+    <div id="results" class="hidden">
+
+      <!-- Tab bar -->
+      <div class="tabs-bar">
+        <button class="tab-btn active" data-tab="chaldean">Chaldean</button>
+        <button class="tab-btn" data-tab="pythagorean">Pythagorean</button>
+        <button class="tab-btn" data-tab="loshu">Lo Shu Grid</button>
+      </div>
+
+      <!-- ── CHALDEAN TAB ── -->
+      <div id="tab-chaldean" class="tab-content active">
+        <div class="section-intro">
+          <h2>Chaldean Numerology</h2>
+          <p>The ancient Babylonian system assigns values 1–8 (9 is sacred and unassigned). It uses compound numbers to reveal both inner and outer personality.</p>
+        </div>
+
+        <div class="numbers-grid">
+          <div class="number-card highlight">
+            <div class="card-label">Name Number</div>
+            <div class="card-compound" id="chald-name-compound">–</div>
+            <div class="card-number" id="chald-name-single">–</div>
+            <div class="card-meaning" id="chald-name-meaning"></div>
+          </div>
+          <div class="number-card">
+            <div class="card-label">Birth Date Number</div>
+            <div class="card-compound" id="chald-dob-compound">–</div>
+            <div class="card-number" id="chald-dob-single">–</div>
+            <div class="card-meaning" id="chald-dob-meaning"></div>
+          </div>
+          <div class="number-card">
+            <div class="card-label">Combined Destiny</div>
+            <div class="card-compound" id="chald-combined-compound">–</div>
+            <div class="card-number" id="chald-combined-single">–</div>
+            <div class="card-meaning" id="chald-combined-meaning"></div>
+          </div>
+        </div>
+
+        <div class="compound-note">
+          <strong>Compound vs Single:</strong> In Chaldean numerology the compound (double-digit) number represents inner influences; the single digit represents outer expression.
+        </div>
+
+        <div class="prediction-section">
+          <h3>✦ Your Chaldean Predictions</h3>
+          <div id="chald-predictions" class="predictions-grid"></div>
+        </div>
+
+        <div class="letter-table-section">
+          <h3>Letter Breakdown</h3>
+          <div id="chald-letter-table" class="letter-table"></div>
+        </div>
+
+        <div class="chart-reference">
+          <h3>Chaldean Chart</h3>
+          <div class="chart-grid chaldean-chart">
+            <div class="chart-row header-row"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span></div>
+            <div class="chart-row"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>U</span><span>O</span><span>F</span></div>
+            <div class="chart-row"><span>I</span><span>K</span><span>G</span><span>M</span><span>H</span><span>V</span><span>Z</span><span>P</span></div>
+            <div class="chart-row"><span>J</span><span>R</span><span>L</span><span>T</span><span>N</span><span>W</span><span>–</span><span>–</span></div>
+            <div class="chart-row"><span>Q</span><span>–</span><span>S</span><span>–</span><span>X</span><span>–</span><span>–</span><span>–</span></div>
+            <div class="chart-row"><span>Y</span><span>–</span><span>–</span><span>–</span><span>–</span><span>–</span><span>–</span><span>–</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PYTHAGOREAN TAB ── -->
+      <div id="tab-pythagorean" class="tab-content">
+        <div class="section-intro">
+          <h2>Pythagorean Numerology</h2>
+          <p>The Western system assigns numbers 1–9 sequentially to the alphabet. It reveals your outer expression, soul's desire, and life purpose.</p>
+        </div>
+
+        <div class="numbers-grid">
+          <div class="number-card highlight">
+            <div class="card-label">Life Path Number</div>
+            <div class="card-number" id="pyth-lifepath">–</div>
+            <div class="card-raw" id="pyth-lifepath-raw"></div>
+            <div class="card-meaning" id="pyth-lifepath-meaning"></div>
+          </div>
+          <div class="number-card">
+            <div class="card-label">Expression / Destiny</div>
+            <div class="card-number" id="pyth-expression">–</div>
+            <div class="card-raw" id="pyth-expression-raw"></div>
+            <div class="card-meaning" id="pyth-expression-meaning"></div>
+          </div>
+          <div class="number-card">
+            <div class="card-label">Soul Urge (Vowels)</div>
+            <div class="card-number" id="pyth-soul">–</div>
+            <div class="card-raw" id="pyth-soul-raw"></div>
+            <div class="card-meaning" id="pyth-soul-meaning"></div>
+          </div>
+          <div class="number-card">
+            <div class="card-label">Personality (Consonants)</div>
+            <div class="card-number" id="pyth-personality">–</div>
+            <div class="card-raw" id="pyth-personality-raw"></div>
+            <div class="card-meaning" id="pyth-personality-meaning"></div>
+          </div>
+        </div>
+
+        <div class="prediction-section">
+          <h3>✦ Your Pythagorean Predictions</h3>
+          <div id="pyth-predictions" class="predictions-grid"></div>
+        </div>
+
+        <div class="letter-table-section">
+          <h3>Letter Breakdown</h3>
+          <div id="pyth-letter-table" class="letter-table"></div>
+        </div>
+
+        <div class="chart-reference">
+          <h3>Pythagorean Chart</h3>
+          <div class="chart-grid">
+            <div class="chart-row header-row"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div>
+            <div class="chart-row"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span></div>
+            <div class="chart-row"><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span></div>
+            <div class="chart-row"><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LO SHU GRID TAB ── -->
+      <div id="tab-loshu" class="tab-content">
+        <div class="section-intro">
+          <h2>Lo Shu Grid</h2>
+          <p>An ancient Chinese magic square where the digits of your birth date are placed. Present numbers reveal strengths; missing numbers indicate areas of growth.</p>
+        </div>
+
+        <div class="loshu-container">
+          <div class="loshu-grid" id="loshu-grid"></div>
+          <div class="loshu-legend">
+            <div class="legend-item present"><span class="legend-dot"></span>Present</div>
+            <div class="legend-item missing"><span class="legend-dot"></span>Missing</div>
+          </div>
+        </div>
+
+        <div class="loshu-planes">
+          <h3>Planes of Expression</h3>
+          <div class="planes-grid">
+            <div class="plane-card">
+              <div class="plane-label">Mental Plane</div>
+              <div class="plane-numbers">4 – 9 – 2 (top row)</div>
+              <p>Thinking, planning, intellectual abilities</p>
+            </div>
+            <div class="plane-card">
+              <div class="plane-label">Emotional Plane</div>
+              <div class="plane-numbers">3 – 5 – 7 (middle row)</div>
+              <p>Feelings, creativity, spirituality</p>
+            </div>
+            <div class="plane-card">
+              <div class="plane-label">Practical Plane</div>
+              <div class="plane-numbers">8 – 1 – 6 (bottom row)</div>
+              <p>Action, material world, execution</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="prediction-section">
+          <h3>✦ Your Lo Shu Predictions</h3>
+          <div id="loshu-predictions" class="predictions-grid"></div>
+        </div>
+
+        <div class="loshu-numbers-detail">
+          <h3>Your Numbers Analysis</h3>
+          <div id="loshu-analysis" class="analysis-grid"></div>
+        </div>
+
+        <div class="loshu-missing-section" id="loshu-missing-section">
+          <h3>Missing Numbers</h3>
+          <div id="loshu-missing-list" class="missing-list"></div>
+        </div>
+      </div>
+
+    </div><!-- /results -->
+  </main>
+
+  <footer class="site-footer">
+    <p>For entertainment and self-reflection purposes only.</p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
