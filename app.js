@@ -75,6 +75,10 @@ function renderChaldean(c) {
   setText('chald-combined-single',   c.combined.single);
   setText('chald-combined-meaning',  meaning(c.combined.single));
 
+  setText('chald-birthday-compound', c.birthday.compound > c.birthday.single ? c.birthday.compound : '');
+  setText('chald-birthday-single',   c.birthday.single);
+  setText('chald-birthday-meaning',  meaning(c.birthday.single));
+
   const table = document.getElementById('chald-letter-table');
   table.innerHTML = c.letterMap.map(({ letter, value }) =>
     `<div class="letter-chip">
@@ -87,11 +91,13 @@ function renderChaldean(c) {
   const namePred  = CHALDEAN_PREDICTIONS.name[c.name.single];
   const dobPred   = CHALDEAN_PREDICTIONS.dob[c.dob.single];
   const combPred  = CHALDEAN_PREDICTIONS.combined[c.combined.single];
+  const bdayPred  = CHALDEAN_PREDICTIONS.birthday[c.birthday.single];
 
   document.getElementById('chald-predictions').innerHTML = [
-    namePred  ? predCard('☽', `Name ${c.name.single} — ${namePred.title}`,   namePred.text)  : '',
-    dobPred   ? predCard('☀', `Birth ${c.dob.single} — ${dobPred.title}`,    dobPred.text)   : '',
-    combPred  ? predCard('✦', `Destiny ${c.combined.single} — ${combPred.title}`, combPred.text) : ''
+    namePred  ? predCard('☽', `Name ${c.name.single} — ${namePred.title}`,           namePred.text)  : '',
+    dobPred   ? predCard('☀', `Birth ${c.dob.single} — ${dobPred.title}`,            dobPred.text)   : '',
+    combPred  ? predCard('✦', `Destiny ${c.combined.single} — ${combPred.title}`,    combPred.text)  : '',
+    bdayPred  ? predCard('◈', `Birthday ${c.birthday.single} — ${bdayPred.title}`,   bdayPred.text)  : ''
   ].join('');
 }
 
@@ -101,16 +107,19 @@ function renderPythagorean(p) {
   setText('pyth-expression',  p.expression.reduced);
   setText('pyth-soul',        p.soulUrge.reduced);
   setText('pyth-personality', p.personality.reduced);
+  setText('pyth-birthday',    p.birthday.reduced);
 
   setText('pyth-lifepath-raw',    rawLabel(p.lifePath.raw, p.lifePath.reduced));
   setText('pyth-expression-raw',  rawLabel(p.expression.raw, p.expression.reduced));
   setText('pyth-soul-raw',        rawLabel(p.soulUrge.raw, p.soulUrge.reduced));
   setText('pyth-personality-raw', rawLabel(p.personality.raw, p.personality.reduced));
+  setText('pyth-birthday-raw',    rawLabel(p.birthday.raw, p.birthday.reduced));
 
   setText('pyth-lifepath-meaning',    meaning(p.lifePath.reduced));
   setText('pyth-expression-meaning',  meaning(p.expression.reduced));
   setText('pyth-soul-meaning',        meaning(p.soulUrge.reduced));
   setText('pyth-personality-meaning', meaning(p.personality.reduced));
+  setText('pyth-birthday-meaning',    meaning(p.birthday.reduced));
 
   const table = document.getElementById('pyth-letter-table');
   table.innerHTML = p.letterMap.map(({ letter, value, isVowel }) =>
@@ -125,12 +134,14 @@ function renderPythagorean(p) {
   const exp = PYTHAGOREAN_PREDICTIONS.expression[p.expression.reduced];
   const su  = PYTHAGOREAN_PREDICTIONS.soulUrge[p.soulUrge.reduced];
   const per = PYTHAGOREAN_PREDICTIONS.personality[p.personality.reduced];
+  const bday = PYTHAGOREAN_PREDICTIONS.birthday[p.birthday.reduced];
 
   document.getElementById('pyth-predictions').innerHTML = [
-    lp  ? predCard('☀', `Life Path ${p.lifePath.reduced} — ${lp.title}`,       lp.text)  : '',
-    exp ? predCard('★', `Expression ${p.expression.reduced} — ${exp.title}`,   exp.text) : '',
-    su  ? predCard('♡', `Soul Urge ${p.soulUrge.reduced}`,                     su)       : '',
-    per ? predCard('◈', `Personality ${p.personality.reduced}`,                per)      : ''
+    lp   ? predCard('☀', `Life Path ${p.lifePath.reduced} — ${lp.title}`,           lp.text)    : '',
+    exp  ? predCard('★', `Expression ${p.expression.reduced} — ${exp.title}`,       exp.text)   : '',
+    bday ? predCard('✦', `Birthday ${p.birthday.reduced} — ${bday.title}`,          bday.text)  : '',
+    su   ? predCard('♡', `Soul Urge ${p.soulUrge.reduced}`,                         su)         : '',
+    per  ? predCard('◈', `Personality ${p.personality.reduced}`,                    per)        : ''
   ].join('');
 }
 
