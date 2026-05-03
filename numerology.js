@@ -40,11 +40,14 @@ export function pythagorean(name, dob) {
   const digits = dob.replace(/\D/g, '');
   const lifePathRaw = digits.split('').reduce((s, d) => s + parseInt(d), 0);
 
+  const day = parseInt(dob.split('-')[2], 10);
+
   return {
     expression:  { raw: expressionRaw,   reduced: reduceToSingle(expressionRaw) },
     soulUrge:    { raw: soulRaw,          reduced: reduceToSingle(soulRaw) },
     personality: { raw: personalityRaw,   reduced: reduceToSingle(personalityRaw) },
     lifePath:    { raw: lifePathRaw,      reduced: reduceToSingle(lifePathRaw) },
+    birthday:    { raw: day,              reduced: reduceToSingle(day) },
     letterMap: letters.map(c => ({ letter: c, value: PYTHAGOREAN[c] || 0, isVowel: VOWELS.has(c) }))
   };
 }
@@ -59,10 +62,13 @@ export function chaldean(name, dob) {
   const dobRaw = digits.split('').reduce((s, d) => s + parseInt(d), 0);
   const combinedRaw = nameRaw + dobRaw;
 
+  const day = parseInt(dob.split('-')[2], 10);
+
   return {
     name:     { compound: nameRaw,     single: reduceToSingle(nameRaw, false) },
     dob:      { compound: dobRaw,      single: reduceToSingle(dobRaw, false) },
     combined: { compound: combinedRaw, single: reduceToSingle(combinedRaw, false) },
+    birthday: { compound: day,         single: reduceToSingle(day, false) },
     letterMap: letters.map(c => ({ letter: c, value: CHALDEAN[c] || 0 }))
   };
 }
@@ -142,6 +148,17 @@ export const CHALDEAN_PREDICTIONS = {
     8: { title: 'Soul of an Executive', text: 'Your birth date carries the vibration of power and abundance. You are here to achieve big things in the material world. Life will test your integrity and reward your ambition. Financial success and leadership are core themes of your journey.' },
     9: { title: 'Soul of a Sage', text: 'Your birth date marks a life of completion, wisdom, and service. You carry the energy of all numbers and feel a connection to humanity at large. Life calls you to let go of the personal and embrace the universal.' }
   },
+  birthday: {
+    1: { title: 'Day of the Sun', text: 'Born on a 1 day in Chaldean, you carry solar energy — bright, commanding, and impossible to ignore. This vibration marks you as someone who initiates and leads. The ancient Chaldeans saw this as the number of divine fire. Your life force is strong; channel it with purpose.' },
+    2: { title: 'Day of the Moon', text: 'Born on a 2 day in Chaldean, you carry lunar energy — intuitive, receptive, and deeply feeling. The Chaldeans associated this with cycles and hidden influence. You work powerfully behind the scenes and have an uncanny ability to sense what others cannot see.' },
+    3: { title: 'Day of Jupiter', text: 'Born on a 3 day in Chaldean, you carry Jupiterian energy — expansive, optimistic, and abundantly creative. The Chaldeans saw 3 as the number of growth and divine expression. Fortune tends to find you; your gift is in sharing your creative fire with the world.' },
+    4: { title: 'Day of the Sun (Outer)', text: 'Born on a 4 day in Chaldean, you carry a grounded, structured energy tied to earthly mastery. The Chaldeans viewed this as a number of discipline and hidden strength. You may face more resistance than others, but what you build through that resistance becomes unshakeable.' },
+    5: { title: 'Day of Mercury', text: 'Born on a 5 day in Chaldean, you carry Mercurial energy — quick, communicative, and versatile. The Chaldeans saw 5 as the number of the five senses and worldly experience. You are here to explore, connect, and transmit knowledge. Adaptability is your greatest power.' },
+    6: { title: 'Day of Venus', text: 'Born on a 6 day in Chaldean, you carry Venusian energy — harmonious, magnetic, and deeply loving. The Chaldeans associated this vibration with beauty, balance, and earthly paradise. You draw people to you naturally; your purpose is to create beauty and nurture those in your orbit.' },
+    7: { title: 'Day of Neptune', text: 'Born on a 7 day in Chaldean, you carry Neptune\'s energy — mystical, reflective, and spiritually charged. The Chaldeans considered 7 the most sacred of numbers, tied to divine mystery. You are drawn to the hidden dimensions of life and carry an inner knowing that guides you beyond ordinary logic.' },
+    8: { title: 'Day of Saturn', text: 'Born on an 8 day in Chaldean, you carry Saturnian energy — serious, disciplined, and built for endurance. The Chaldeans saw 8 as the number of karma and material law. What you sow, you reap with precision. Patience and integrity are your greatest allies on the path to lasting achievement.' },
+    9: { title: 'Day of Mars', text: 'Born on a 9 day in Chaldean, you carry Martian energy — courageous, driven, and spiritually complete. The Chaldeans held 9 as sacred and unassigned to letters — a divine number. You carry the full spectrum of human experience and are called to use your strength in service of something greater than yourself.' }
+  },
   combined: {
     1: { title: 'Destiny of Independence', text: 'Your combined energy points to a life of self-made success. You will forge your own path and become a trailblazer in your field. Relationships thrive when you maintain your independence within them.' },
     2: { title: 'Destiny of Partnership', text: 'Your combined energy draws you toward meaningful collaboration. Your greatest achievements will come through working closely with others. Intuition is your superpower — trust it in both personal and professional choices.' },
@@ -198,6 +215,19 @@ export const PYTHAGOREAN_PREDICTIONS = {
     11: 'At your deepest core, you yearn for spiritual connection and a sense of divine purpose. Your soul desires to be a vessel for higher wisdom. You feel most alive when you are inspiring others through your unique intuitive gifts.',
     22: 'Deep inside, you crave the opportunity to build something monumental that serves humanity. Your soul is not satisfied with small dreams. You feel most alive when your work has global significance and practical impact at scale.',
     33: 'At your deepest core, you yearn to love without limits and heal without judgment. Your soul desires to be a teacher of unconditional love. You feel most alive when you are lifting others out of pain and into their highest potential.'
+  },
+  birthday: {
+    1:  { title: 'The Self-Starter', text: 'Born on a 1 day, you carry a natural spark of independence and initiative. You are at your best when leading or creating something of your own. This number gifts you with courage and originality — use them to begin what others only talk about.' },
+    2:  { title: 'The Sensitive Soul', text: 'Born on a 2 day, you possess heightened intuition and emotional intelligence. You read rooms and people effortlessly. This number gifts you with the power of partnership — your greatest achievements will be built alongside others, not alone.' },
+    3:  { title: 'The Natural Communicator', text: 'Born on a 3 day, you carry an infectious creative energy. Words, ideas, and artistic expression come naturally to you. This number gifts you with charm and wit — when you share your voice freely, you uplift and inspire everyone around you.' },
+    4:  { title: 'The Disciplined Worker', text: 'Born on a 4 day, you are gifted with focus, patience, and a methodical mind. You build things that last. This number gifts you with an unshakable work ethic — when you commit fully, there is almost nothing you cannot accomplish over time.' },
+    5:  { title: 'The Born Adventurer', text: 'Born on a 5 day, you are wired for movement, change, and variety. Routine is your nemesis; new experiences are your fuel. This number gifts you with adaptability and magnetism — your ability to thrive in any situation is your greatest strength.' },
+    6:  { title: 'The Heart of the Home', text: 'Born on a 6 day, you carry deep love for family, beauty, and community. You are a natural caretaker and peacemaker. This number gifts you with warmth and responsibility — when you channel it wisely, you become the anchor that holds everyone together.' },
+    7:  { title: 'The Deep Thinker', text: 'Born on a 7 day, you have a naturally analytical and spiritually curious mind. You are drawn to mystery, research, and inner truth. This number gifts you with rare depth of perception — your insights, when trusted, can cut through confusion and find the hidden answer.' },
+    8:  { title: 'The Power Builder', text: 'Born on an 8 day, you carry an innate understanding of how the material world works. Authority, ambition, and strategy come naturally to you. This number gifts you with executive ability — when paired with integrity, your drive for success becomes genuinely unstoppable.' },
+    9:  { title: 'The Old Soul', text: 'Born on a 9 day, you carry the wisdom of many experiences. You are compassionate, globally minded, and deeply empathetic. This number gifts you with universal understanding — your greatest power lies in giving generously and inspiring others toward their own potential.' },
+    11: { title: 'The Intuitive Messenger', text: 'Born on the Master Day 11, you carry extraordinary sensitivity and visionary perception. You pick up on frequencies that others completely miss. This number gifts you with spiritual insight and the power to inspire — when you trust your inner voice, you become a genuine beacon for those around you.' },
+    22: { title: 'The Master Manifester', text: 'Born on the Master Day 22, you are endowed with a rare combination of vision and practical power. You can dream at scale and execute at scale. This number gifts you with the capacity to leave an enduring legacy — your challenge is to believe, fully, that you are as capable as you truly are.' }
   },
   personality: {
     1:  'To the outside world, you appear confident, assertive, and self-sufficient. Others see you as a natural leader and an independent spirit. You project an aura of authority that commands respect even before you speak.',

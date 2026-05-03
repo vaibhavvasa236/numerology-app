@@ -238,6 +238,62 @@ main {
   max-width: 680px;
 }
 
+/* ── System info heading ── */
+.system-info-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--gold-light);
+  letter-spacing: .04em;
+  margin-bottom: .85rem;
+  padding-top: .5rem;
+}
+
+/* ── System info ── */
+.system-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 720px) {
+  .system-info { grid-template-columns: 1fr; }
+}
+
+.info-card {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.2rem;
+  position: relative;
+}
+
+.info-icon {
+  font-size: 1.4rem;
+  margin-bottom: .5rem;
+  line-height: 1;
+}
+
+.info-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--gold-light);
+  letter-spacing: .04em;
+  margin-bottom: .6rem;
+}
+
+.info-card p {
+  font-size: .83rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.info-card p strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
 /* ── Number cards ── */
 .numbers-grid {
   display: grid;
