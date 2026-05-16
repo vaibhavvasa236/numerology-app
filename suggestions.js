@@ -145,14 +145,14 @@ function tryAllLevels(firstName, lastName, fatherName, targets) {
   // Config: { fn1, fn2, ln1, ln2, mid, desc }
   // fn2/ln2 are step-2 variants used to supplement if step-1 gives < MAX
   const configs = [
-    { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: null, desc: 'First name adjustment' },
-    { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: MID,  desc: `First name + father initial "${MID}"` },
-    { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: null, desc: 'Last name adjustment' },
-    { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: MID,  desc: `Last name + father initial "${MID}"` },
+    { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: null, needsFather: false, desc: 'First name adjustment' },
+    { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: MID,  needsFather: true,  desc: MID ? `First name + father initial "${MID}"` : '' },
+    { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: null, needsFather: false, desc: 'Last name adjustment' },
+    { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: MID,  needsFather: true,  desc: MID ? `Last name + father initial "${MID}"` : '' },
   ];
 
-  for (const { fn1, fn2, ln1, ln2, mid, desc } of configs) {
-    if (mid !== null && !MID) continue; // skip mid configs when no father name given
+  for (const { fn1, fn2, ln1, ln2, mid, needsFather, desc } of configs) {
+    if (needsFather && !MID) continue; // skip father-initial configs when no father name given
     const hits = collectConfig(fn1, fn2, ln1, ln2, mid, targets, MAX);
     if (hits.length > 0) return { suggestions: hits, levelDesc: desc };
   }
