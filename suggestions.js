@@ -157,9 +157,14 @@ function collectConfig(fn1, fn2, ln1, ln2, middle, targets, MAX, fnVs, lnVs) {
 function tryAllLevels(firstName, lastName, fatherName, targets) {
   const FN0   = firstName.toUpperCase().replace(/[^A-Z]/g,'');
   const LN0   = lastName.toUpperCase().replace(/[^A-Z]/g,'');
-  const MID   = fatherName && fatherName.trim()
+  // MID_INIT = first letter only (e.g. "B" for "Bharat") — tried first, smaller addition.
+  // MID_FULL = full father name (e.g. "SHAH") — fallback when initial alone isn't enough.
+  const MID_INIT = fatherName && fatherName.trim() ? fatherName.trim()[0].toUpperCase() : null;
+  const MID_FULL = fatherName && fatherName.trim()
     ? fatherName.trim().toUpperCase().replace(/[^A-Z]/g, '')
     : null;
+  // Only use MID_FULL as a separate fallback when the full name differs from the initial
+  const MID_FULL_DIFF = MID_FULL && MID_FULL.length > 1 ? MID_FULL : null;
   const MAX   = 3;
 
   const fn1V    = [...safeVariants(firstName)];
@@ -171,21 +176,25 @@ function tryAllLevels(firstName, lastName, fatherName, targets) {
   const fnFixed = [[FN0, '(unchanged)']];
   const lnFixed = [[LN0, '(unchanged)']];
 
-  const midLabel = MID ? MID.charAt(0) + MID.slice(1).toLowerCase() : '';
+  const initLabel = MID_INIT || '';
+  const fullLabel = MID_FULL_DIFF ? MID_FULL_DIFF.charAt(0) + MID_FULL_DIFF.slice(1).toLowerCase() : '';
 
   // Config: { fn1, fn2, fnVs, ln1, ln2, lnVs, mid, needsFather, desc }
   // fn2/ln2 are step-2 doubling supplements; fnVs/lnVs are vowel-swap supplements.
-  // Supplement priority inside collectConfig: vowel swaps > step-2 doublings.
+  // Father-name configs: initial (smaller) tried before full name (fallback).
   const configs = [
-    { fn1: fn1V,    fn2: fn2V,  fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: null, needsFather: false, desc: 'First name adjustment' },
-    { fn1: fnFixed, fn2: null,  fnVs: null,   ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID,  needsFather: true,  desc: MID ? `Adding father name "${midLabel}"` : '' },
-    { fn1: fn1V,    fn2: fn2V,  fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID,  needsFather: true,  desc: MID ? `First name adjustment + father name "${midLabel}"` : '' },
-    { fn1: fnFixed, fn2: null,  fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: null, needsFather: false, desc: 'Last name adjustment' },
-    { fn1: fnFixed, fn2: null,  fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: MID,  needsFather: true,  desc: MID ? `Last name adjustment + father name "${midLabel}"` : '' },
+    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: null,         needsFather: false, desc: 'First name adjustment' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_INIT,     needsFather: true,  desc: MID_INIT ? `Adding father initial "${initLabel}"` : '' },
+    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_INIT,     needsFather: true,  desc: MID_INIT ? `First name adjustment + father initial "${initLabel}"` : '' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: null,         needsFather: false, desc: 'Last name adjustment' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: MID_INIT,     needsFather: true,  desc: MID_INIT ? `Last name adjustment + father initial "${initLabel}"` : '' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_FULL_DIFF, needsFather: true, desc: MID_FULL_DIFF ? `Adding father name "${fullLabel}"` : '' },
+    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_FULL_DIFF, needsFather: true, desc: MID_FULL_DIFF ? `First name adjustment + father name "${fullLabel}"` : '' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: MID_FULL_DIFF, needsFather: true, desc: MID_FULL_DIFF ? `Last name adjustment + father name "${fullLabel}"` : '' },
   ];
 
   for (const { fn1, fn2, fnVs, ln1, ln2, lnVs, mid, needsFather, desc } of configs) {
-    if (needsFather && !MID) continue; // skip father-initial configs when no father name given
+    if (needsFather && !MID_INIT) continue; // skip father configs when no father name given
     const hits = collectConfig(fn1, fn2, ln1, ln2, mid, targets, MAX, fnVs, lnVs);
     if (hits.length > 0) return { suggestions: hits, levelDesc: desc };
   }
