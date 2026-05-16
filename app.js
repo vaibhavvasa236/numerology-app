@@ -7,6 +7,8 @@ import {
   LOSHU_MISSING_PREDICTIONS
 } from './numerology.js';
 
+import { analyzeCurrentName, generateSuggestions } from './suggestions.js';
+
 // ── Tab switching
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -20,12 +22,25 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ── Form submit
 document.getElementById('calc-form').addEventListener('submit', e => {
   e.preventDefault();
-  const name = document.getElementById('full-name').value.trim();
-  const dob  = document.getElementById('dob').value;
-  const err  = document.getElementById('form-error');
+  const firstName    = document.getElementById('first-name').value.trim();
+  const lastName     = document.getElementById('last-name').value.trim();
+  const middleName   = document.getElementById('middle-name').value.trim();
+  const officialName = document.getElementById('official-name').value.trim();
+  const dob          = document.getElementById('dob').value;
+  const err          = document.getElementById('form-error');
 
-  if (!name || !/[a-zA-Z]/.test(name)) {
-    err.textContent = 'Please enter a valid name containing letters.';
+  if (!firstName || !/[a-zA-Z]/.test(firstName)) {
+    err.textContent = 'Please enter a valid first name.';
+    err.classList.remove('hidden');
+    return;
+  }
+  if (!lastName || !/[a-zA-Z]/.test(lastName)) {
+    err.textContent = 'Please enter a valid last name.';
+    err.classList.remove('hidden');
+    return;
+  }
+  if (!middleName || !/[a-zA-Z]/.test(middleName)) {
+    err.textContent = 'Please enter a Father / Spouse Name.';
     err.classList.remove('hidden');
     return;
   }
@@ -36,9 +51,15 @@ document.getElementById('calc-form').addEventListener('submit', e => {
   }
   err.classList.add('hidden');
 
-  renderChaldean(chaldean(name, dob));
-  renderPythagorean(pythagorean(name, dob));
+  const nameForCalc = officialName || [firstName, middleName, lastName].filter(Boolean).join(' ');
+
+  renderChaldean(chaldean(nameForCalc, dob));
+  renderPythagorean(pythagorean(nameForCalc, dob));
   renderLoShu(loShu(dob));
+
+  const analysis = analyzeCurrentName(firstName, lastName, officialName, dob);
+  const { suggestions, levelDesc, usingFallback, fallbackReason } = generateSuggestions(firstName, lastName, middleName, dob);
+  renderSuggestions(analysis, suggestions, levelDesc, usingFallback, fallbackReason);
 
   document.getElementById('results').classList.remove('hidden');
   document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -215,6 +236,120 @@ function renderLoShu({ layout, counts, present, missing, meanings }) {
     predCard('★', pp.title, pp.text),
     missingPreds
   ].join('');
+}
+
+const UNLUCKY_FIRST_SET = new Set([4,8,13,17,22,26,31]);
+
+// ── Name Suggestions renderer
+function renderSuggestions(analysis, suggestions, levelDesc, usingFallback, fallbackReason) {
+  const statusEl    = document.getElementById('sugg-status');
+  const groupEl     = document.getElementById('sugg-group-info');
+  const gridEl      = document.getElementById('sugg-grid');
+  const gridTitle   = document.getElementById('sugg-grid-title');
+  const gridWrap    = document.getElementById('sugg-grid-wrap');
+  const noneEl      = document.getElementById('sugg-none');
+
+  const { usedName, usedFirst, firstNameSum, fullNameSum,
+          targets, dateGroup, lifePathNum, lifePathGroup,
+          firstNameOk, fullNameOk, fullyLucky } = analysis;
+
+  // Date group banner
+  const dateGroupLabel = dateGroup === 1
+    ? 'Group 1 dates (1,2,4,7,10,11,13,16,19,20,22,25,28,29,31)'
+    : 'Group 2 dates (all other dates)';
+  const lpGroupLabel = lifePathGroup === 1 ? 'Group 1' : 'Group 2';
+  const fallbackNote = (lifePathGroup !== dateGroup)
+    ? `<span class="sgb-lp">Life path ${lifePathNum} → ${lpGroupLabel} (fallback available)</span>`
+    : '';
+  groupEl.innerHTML = `
+    <div class="sugg-group-badge">
+      <span class="sgb-label">Your birth date falls in</span>
+      <span class="sgb-name">${dateGroupLabel}</span>
+      <span class="sgb-targets">Lucky name totals for you: <strong>${targets.join(', ')}</strong></span>
+      ${fallbackNote}
+    </div>`;
+
+  // Current name status card
+  const firstBadge = firstNameOk
+    ? `<span class="sbadge good">✓ Good (${firstNameSum})</span>`
+    : `<span class="sbadge bad">✗ Avoid (${firstNameSum})</span>`;
+  const fullBadge = fullNameOk
+    ? `<span class="sbadge good">✓ Lucky (${fullNameSum})</span>`
+    : `<span class="sbadge bad">✗ Not lucky (${fullNameSum})</span>`;
+  const overallClass = fullyLucky ? 'status-lucky' : 'status-unlucky';
+  const overallIcon  = fullyLucky ? '✦' : '✗';
+  const overallText  = fullyLucky
+    ? 'Your name is already aligned with your lucky numbers!'
+    : 'Your name can be improved for better alignment.';
+
+  const displayUsedName  = usedName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+  const displayUsedFirst = usedFirst.charAt(0).toUpperCase() + usedFirst.slice(1).toLowerCase();
+
+  statusEl.innerHTML = `
+    <div class="sugg-status-card ${overallClass}">
+      <div class="ssc-icon">${overallIcon}</div>
+      <div class="ssc-body">
+        <div class="ssc-name">${displayUsedName}</div>
+        <div class="ssc-text">${overallText}</div>
+        <div class="ssc-checks">
+          <div class="ssc-check">
+            <span class="scc-label">First name "${displayUsedFirst}"</span>
+            ${firstBadge}
+          </div>
+          <div class="ssc-check">
+            <span class="scc-label">Full name total</span>
+            ${fullBadge}
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // Suggestions
+  if (fullyLucky) {
+    gridWrap.classList.add('hidden');
+    noneEl.classList.remove('hidden');
+    noneEl.innerHTML = `<p>No changes needed — your name vibration is perfectly aligned. ✦</p>`;
+    return;
+  }
+
+  noneEl.classList.add('hidden');
+
+  if (suggestions.length === 0) {
+    gridWrap.classList.add('hidden');
+    noneEl.classList.remove('hidden');
+    noneEl.innerHTML = `<p>No simple spelling modifications found for the lucky totals (${targets.join(', ')}). Your name total is currently <strong>${fullNameSum}</strong>. Try adding a Father / Spouse name above to explore more combinations.</p>`;
+    return;
+  }
+
+  gridWrap.classList.remove('hidden');
+  const fallbackLabel = usingFallback ? ` — via life path fallback (${fallbackReason})` : '';
+  gridTitle.textContent = `Suggested Name Modifications — ${levelDesc}${fallbackLabel} (${suggestions.length} found)`;
+
+  gridEl.innerHTML = suggestions.map(s => {
+    const changeNote = [
+      s.fnChange && `First name: ${s.fnChange}`,
+      s.lnChange && `Last name: ${s.lnChange}`
+    ].filter(Boolean).join(' · ') || 'Spelling adjustment';
+    const fnOk = !UNLUCKY_FIRST_SET.has(s.firstNameSum);
+    const displayName = s.display.split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
+    const firstName   = s.firstName.charAt(0) + s.firstName.slice(1).toLowerCase();
+    return `
+    <div class="sugg-card">
+      <div class="sc-type">✎ Spelling modification</div>
+      <div class="sc-name">${displayName}</div>
+      <div class="sc-note">${changeNote}</div>
+      <div class="sc-totals">
+        <div class="sc-total-item">
+          <span class="sc-ti-label">First name "${firstName}"</span>
+          <span class="sc-ti-val ${fnOk ? 'good' : 'bad'}">${s.firstNameSum}</span>
+        </div>
+        <div class="sc-total-item">
+          <span class="sc-ti-label">Full name total</span>
+          <span class="sc-ti-val good">${s.fullNameSum} ✦</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function setText(id, val) {
