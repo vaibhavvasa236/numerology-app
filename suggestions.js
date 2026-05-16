@@ -37,13 +37,16 @@ function isNatural(name) {
   let run = 0;
   for (const c of name.toUpperCase().replace(/[^A-Z]/g,'')) {
     run = isVow(c) ? 0 : run + 1;
-    if (run >= 4) return false;
+    if (run >= 5) return false;
   }
   return true;
 }
 
-// Vowel substitution variants: swap each vowel for each other vowel in-place.
-// Only replaces vowel with a different vowel — consonant structure unchanged.
+// Vowel substitution variants: swap each vowel for a phonetically similar vowel in-place.
+// Front vowels (A, E, I) only swap with each other; back vowels (O, U) only swap with each other.
+// This prevents pronunciation-changing swaps like I→O.
+const VOWEL_GROUP = { A: 0, E: 0, I: 0, O: 1, U: 1 };
+
 function vowelSwapVariants(name) {
   const up  = name.toUpperCase().replace(/[^A-Z]/g, '');
   const res = new Map();
@@ -51,6 +54,7 @@ function vowelSwapVariants(name) {
     if (!isVow(up[i])) continue;
     for (const vow of ['A', 'E', 'I', 'O', 'U']) {
       if (vow === up[i]) continue;
+      if (VOWEL_GROUP[vow] !== VOWEL_GROUP[up[i]]) continue;
       const v = up.slice(0, i) + vow + up.slice(i + 1);
       if (!res.has(v)) res.set(v, `Vowel swap '${up[i]}' to '${vow}' (pos ${i + 1})`);
     }
