@@ -132,7 +132,9 @@ function collectConfig(fn1, fn2, ln1, ln2, middle, targets, MAX) {
 function tryAllLevels(firstName, lastName, fatherName, targets) {
   const FN0   = firstName.toUpperCase().replace(/[^A-Z]/g,'');
   const LN0   = lastName.toUpperCase().replace(/[^A-Z]/g,'');
-  const MID   = fatherName && fatherName.trim() ? fatherName.trim()[0].toUpperCase() : null;
+  const MID   = fatherName && fatherName.trim()
+    ? fatherName.trim().toUpperCase().replace(/[^A-Z]/g, '')
+    : null;
   const MAX   = 3;
 
   const fn1V    = [...safeVariants(firstName)];
@@ -142,13 +144,16 @@ function tryAllLevels(firstName, lastName, fatherName, targets) {
   const fnFixed = [[FN0, '(unchanged)']];
   const lnFixed = [[LN0, '(unchanged)']];
 
+  const midLabel = MID ? MID.charAt(0) + MID.slice(1).toLowerCase() : '';
+
   // Config: { fn1, fn2, ln1, ln2, mid, desc }
   // fn2/ln2 are step-2 variants used to supplement if step-1 gives < MAX
   const configs = [
     { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: null, needsFather: false, desc: 'First name adjustment' },
-    { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: MID,  needsFather: true,  desc: MID ? `First name + father initial "${MID}"` : '' },
+    { fn1: fnFixed, fn2: null,  ln1: lnFixed, ln2: null,  mid: MID,  needsFather: true,  desc: MID ? `Adding father name "${midLabel}"` : '' },
+    { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: MID,  needsFather: true,  desc: MID ? `First name adjustment + father name "${midLabel}"` : '' },
     { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: null, needsFather: false, desc: 'Last name adjustment' },
-    { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: MID,  needsFather: true,  desc: MID ? `Last name + father initial "${MID}"` : '' },
+    { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: MID,  needsFather: true,  desc: MID ? `Last name adjustment + father name "${midLabel}"` : '' },
   ];
 
   for (const { fn1, fn2, ln1, ln2, mid, needsFather, desc } of configs) {
