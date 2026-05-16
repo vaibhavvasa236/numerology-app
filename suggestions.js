@@ -42,6 +42,22 @@ function isNatural(name) {
   return true;
 }
 
+// Vowel substitution variants: swap each vowel for each other vowel in-place.
+// Only replaces vowel with a different vowel — consonant structure unchanged.
+function vowelSwapVariants(name) {
+  const up  = name.toUpperCase().replace(/[^A-Z]/g, '');
+  const res = new Map();
+  for (let i = 0; i < up.length; i++) {
+    if (!isVow(up[i])) continue;
+    for (const vow of ['A', 'E', 'I', 'O', 'U']) {
+      if (vow === up[i]) continue;
+      const v = up.slice(0, i) + vow + up.slice(i + 1);
+      if (!res.has(v)) res.set(v, `Vowel swap '${up[i]}' to '${vow}' (pos ${i + 1})`);
+    }
+  }
+  return res;
+}
+
 // Single-step variants: double any letter in-place.
 // Appending and removal are excluded — both change pronunciation.
 // Variants that would create 3+ consecutive identical letters are skipped (e.g. AAA).
@@ -71,15 +87,15 @@ function safeVariants2(name) {
   return res;
 }
 
-// Score a change — step-1 beats step-2; within each step, vowel doublings
-// rank higher than consonant doublings (more pronunciation-preserving).
+// Score a change — unchanged > step-1 doubling > vowel swap > step-2 doubling.
 function varScore(desc) {
   if (desc === '(unchanged)') return 20;
+  if (desc.startsWith('Vowel swap')) return 8;
   if (!desc.includes('→')) {
-    // Step-1: base 10, +2 if the doubled letter is a vowel
+    // Step-1 doubling: base 10, +2 if the doubled letter is a vowel
     return 10 + (isVow(desc[8]) ? 2 : 0);
   }
-  // Step-2: score by how many of the two doubled letters are vowels (0–4)
+  // Step-2 doubling: score by how many of the two doubled letters are vowels (0–4)
   const [d1, d2] = desc.split(' → ');
   return (isVow((d1 || '')[8]) ? 2 : 0) + (isVow((d2 || '')[8]) ? 2 : 0);
 }
@@ -112,18 +128,27 @@ function collect(fnEntries, lnEntries, middle, targets) {
   return results.sort((a, b) => b.score - a.score);
 }
 
-// Within one config (same fn/ln source, same middle), collect step-1 results
-// then supplement with step-2 results to fill up to MAX.
-// Step-1 always scores higher than step-2 via varScore, so ranking is natural.
-function collectConfig(fn1, fn2, ln1, ln2, middle, targets, MAX) {
-  const step1   = collect(fn1, ln1, middle, targets);
+// Within one config, collect step-1 doubling results then supplement to fill up to MAX.
+// Supplement priority: vowel swaps (score ~8) before step-2 doublings (score 0–4).
+// fnVs/lnVs are the vowel-swap variant lists for fn and ln respectively.
+function collectConfig(fn1, fn2, ln1, ln2, middle, targets, MAX, fnVs, lnVs) {
+  const step1 = collect(fn1, ln1, middle, targets);
   if (step1.length >= MAX) return step1.slice(0, MAX);
 
-  // Supplement with step-2 (double-doubling) to fill remaining slots
-  const seen    = new Set(step1.map(s => s.display));
-  const step2   = collect(fn2 ?? fn1, ln2 ?? ln1, middle, targets)
-                    .filter(s => !seen.has(s.display));
-  return [...step1, ...step2].slice(0, MAX);
+  const seen = new Set(step1.map(s => s.display));
+
+  // Vowel swaps as mid-priority supplement (scored 8, beats step-2 doublings 0–4)
+  const vsHits = (fnVs || lnVs)
+    ? collect(fnVs ?? fn1, lnVs ?? ln1, middle, targets).filter(s => !seen.has(s.display))
+    : [];
+  const vsSeen = new Set([...seen, ...vsHits.map(s => s.display)]);
+
+  // Step-2 doublings as last-resort supplement
+  const s2Hits = collect(fn2 ?? fn1, ln2 ?? ln1, middle, targets)
+    .filter(s => !vsSeen.has(s.display));
+
+  const supplement = [...vsHits, ...s2Hits].sort((a, b) => b.score - a.score);
+  return [...step1, ...supplement].slice(0, MAX);
 }
 
 // Try all priority configs for a given targets array.
@@ -132,28 +157,36 @@ function collectConfig(fn1, fn2, ln1, ln2, middle, targets, MAX) {
 function tryAllLevels(firstName, lastName, fatherName, targets) {
   const FN0   = firstName.toUpperCase().replace(/[^A-Z]/g,'');
   const LN0   = lastName.toUpperCase().replace(/[^A-Z]/g,'');
-  const MID   = fatherName && fatherName.trim() ? fatherName.trim()[0].toUpperCase() : null;
+  const MID   = fatherName && fatherName.trim()
+    ? fatherName.trim().toUpperCase().replace(/[^A-Z]/g, '')
+    : null;
   const MAX   = 3;
 
   const fn1V    = [...safeVariants(firstName)];
   const fn2V    = [...safeVariants2(firstName)].filter(([v]) => !safeVariants(firstName).has(v));
   const ln1V    = [...safeVariants(lastName)];
   const ln2V    = [...safeVariants2(lastName)].filter(([v]) => !safeVariants(lastName).has(v));
+  const fnVsV   = [...vowelSwapVariants(firstName)];
+  const lnVsV   = [...vowelSwapVariants(lastName)];
   const fnFixed = [[FN0, '(unchanged)']];
   const lnFixed = [[LN0, '(unchanged)']];
 
-  // Config: { fn1, fn2, ln1, ln2, mid, desc }
-  // fn2/ln2 are step-2 variants used to supplement if step-1 gives < MAX
+  const midLabel = MID ? MID.charAt(0) + MID.slice(1).toLowerCase() : '';
+
+  // Config: { fn1, fn2, fnVs, ln1, ln2, lnVs, mid, needsFather, desc }
+  // fn2/ln2 are step-2 doubling supplements; fnVs/lnVs are vowel-swap supplements.
+  // Supplement priority inside collectConfig: vowel swaps > step-2 doublings.
   const configs = [
-    { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: null, desc: 'First name adjustment' },
-    { fn1: fn1V,    fn2: fn2V,  ln1: lnFixed, ln2: null,  mid: MID,  desc: `First name + father initial "${MID}"` },
-    { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: null, desc: 'Last name adjustment' },
-    { fn1: fnFixed, fn2: null,  ln1: ln1V,    ln2: ln2V,  mid: MID,  desc: `Last name + father initial "${MID}"` },
+    { fn1: fn1V,    fn2: fn2V,  fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: null, needsFather: false, desc: 'First name adjustment' },
+    { fn1: fnFixed, fn2: null,  fnVs: null,   ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID,  needsFather: true,  desc: MID ? `Adding father name "${midLabel}"` : '' },
+    { fn1: fn1V,    fn2: fn2V,  fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID,  needsFather: true,  desc: MID ? `First name adjustment + father name "${midLabel}"` : '' },
+    { fn1: fnFixed, fn2: null,  fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: null, needsFather: false, desc: 'Last name adjustment' },
+    { fn1: fnFixed, fn2: null,  fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: MID,  needsFather: true,  desc: MID ? `Last name adjustment + father name "${midLabel}"` : '' },
   ];
 
-  for (const { fn1, fn2, ln1, ln2, mid, desc } of configs) {
-    if (mid !== null && !MID) continue; // skip mid configs when no father name given
-    const hits = collectConfig(fn1, fn2, ln1, ln2, mid, targets, MAX);
+  for (const { fn1, fn2, fnVs, ln1, ln2, lnVs, mid, needsFather, desc } of configs) {
+    if (needsFather && !MID) continue; // skip father-initial configs when no father name given
+    const hits = collectConfig(fn1, fn2, ln1, ln2, mid, targets, MAX, fnVs, lnVs);
     if (hits.length > 0) return { suggestions: hits, levelDesc: desc };
   }
 

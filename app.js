@@ -39,8 +39,8 @@ document.getElementById('calc-form').addEventListener('submit', e => {
     err.classList.remove('hidden');
     return;
   }
-  if (!middleName || !/[a-zA-Z]/.test(middleName)) {
-    err.textContent = 'Please enter a Father / Spouse Name.';
+  if (middleName && !/[a-zA-Z]/.test(middleName)) {
+    err.textContent = 'Father / Spouse Name must contain letters if provided.';
     err.classList.remove('hidden');
     return;
   }
