@@ -187,14 +187,14 @@ function tryAllLevels(firstName, lastName, fatherName, targets) {
   // fn2/ln2 are step-2 doubling supplements; fnVs/lnVs are vowel-swap supplements.
   // Father-name configs: initial (smaller) tried before full name (fallback).
   const configs = [
-    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: null,         needsFather: false, desc: 'First name adjustment' },
-    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_INIT,     needsFather: true,  desc: MID_INIT ? `Adding father initial "${initLabel}"` : '' },
-    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_INIT,     needsFather: true,  desc: MID_INIT ? `First name adjustment + father initial "${initLabel}"` : '' },
-    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: null,         needsFather: false, desc: 'Last name adjustment' },
-    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: MID_INIT,     needsFather: true,  desc: MID_INIT ? `Last name adjustment + father initial "${initLabel}"` : '' },
-    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_FULL_DIFF, needsFather: true, desc: MID_FULL_DIFF ? `Adding father name "${fullLabel}"` : '' },
-    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_FULL_DIFF, needsFather: true, desc: MID_FULL_DIFF ? `First name adjustment + father name "${fullLabel}"` : '' },
-    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: MID_FULL_DIFF, needsFather: true, desc: MID_FULL_DIFF ? `Last name adjustment + father name "${fullLabel}"` : '' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_INIT,      needsFather: true,  desc: MID_INIT ? `Adding father initial "${initLabel}"` : '' },
+    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: null,          needsFather: false, desc: 'First name adjustment' },
+    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_INIT,      needsFather: true,  desc: MID_INIT ? `First name adjustment + father initial "${initLabel}"` : '' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: null,          needsFather: false, desc: 'Last name adjustment' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: MID_INIT,      needsFather: true,  desc: MID_INIT ? `Last name adjustment + father initial "${initLabel}"` : '' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_FULL_DIFF, needsFather: true,  desc: MID_FULL_DIFF ? `Adding father name "${fullLabel}"` : '' },
+    { fn1: fn1V,    fn2: fn2V,        fnVs: fnVsV,  ln1: lnFixed, ln2: null,  lnVs: null,  mid: MID_FULL_DIFF, needsFather: true,  desc: MID_FULL_DIFF ? `First name adjustment + father name "${fullLabel}"` : '' },
+    { fn1: fnFixed, fn2: null,        fnVs: null,   ln1: ln1V,    ln2: ln2V,  lnVs: lnVsV, mid: MID_FULL_DIFF, needsFather: true,  desc: MID_FULL_DIFF ? `Last name adjustment + father name "${fullLabel}"` : '' },
   ];
 
   for (const { fn1, fn2, fnVs, ln1, ln2, lnVs, mid, needsFather, desc } of configs) {
