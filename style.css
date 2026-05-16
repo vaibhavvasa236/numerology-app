@@ -939,6 +939,44 @@ main {
 .sc-ti-val.good { color: #34d399; }
 .sc-ti-val.bad  { color: #f87171; }
 
+/* ── Number meaning in status card ── */
+.ssc-meaning {
+  margin-top: .75rem;
+  padding-top: .65rem;
+  border-top: 1px solid var(--border);
+  font-size: .8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.ssc-meaning-title {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: .78rem;
+  color: var(--gold-dim);
+  letter-spacing: .04em;
+  margin-bottom: .3rem;
+}
+.ssc-meaning p { margin: 0; }
+
+/* ── Number meaning in suggestion cards ── */
+.sc-meaning {
+  margin-top: .7rem;
+  padding-top: .6rem;
+  border-top: 1px solid var(--border);
+  font-size: .76rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.sc-meaning-title {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: .74rem;
+  color: var(--gold-dim);
+  letter-spacing: .04em;
+  margin-bottom: .25rem;
+}
+.sc-meaning p { margin: 0; }
+
 /* ── No suggestions message ── */
 .sugg-none-msg {
   background: var(--bg-card2);
